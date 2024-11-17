@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Listing</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="cart.html">Cart</a></li>
+                <li><a href="admin.html">Admin Panel</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <div id="product-list" class="product-list">
+        <!-- Products will be displayed here dynamically -->
+    </div>
+
+    <!-- Product Detail Page (hidden) -->
+    <div id="product-detail" class="product-detail" style="display: none;">
+        <header>
+            <h1>Product Detail</h1>
+        </header>
+        <!-- Product details will be displayed here -->
+    </div>
+
+    <!-- Cart Page (hidden) -->
+    <div id="cart-page" style="display: none;">
+        <header>
+            <h1>Your Cart</h1>
+        </header>
+        <div id="cart-items" class="cart-items">
+            <!-- Cart items will be displayed here dynamically -->
+        </div>
+        <button onclick="checkout()">Proceed to Checkout</button>
+    </div>
+
+    <!-- Checkout Page (hidden) -->
+    <div id="checkout-page" style="display: none;">
+        <header>
+            <h1>Checkout</h1>
+        </header>
+        <div class="checkout-form">
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" placeholder="Enter your name" required>
+            <label for="address">Address:</label>
+            <input type="text" id="address" placeholder="Enter your address" required>
+            <label for="payment">Payment Method:</label>
+            <input type="text" id="payment" placeholder="Enter payment details" required>
+            <button onclick="placeOrder()">Place Order</button>
+        </div>
+    </div>
+
+    <!-- Thank You Page (hidden) -->
+    <div id="thank-you-page" style="display: none;">
+        <header>
+            <h1>Thank You for Your Order!</h1>
+            <p>Your order has been successfully placed. We will notify you when it's shipped.</p>
+        </header>
+    </div>
+
+    <script>
+// Simulating a simple backend response with random images
+const products = [
+    { id: 1, name: 'Product 1', description: 'Description for Product 1', price: 25.99, image: 'https://source.unsplash.com/200x200/?product,1' },
+    { id: 2, name: 'Product 2', description: 'Description for Product 2', price: 19.99, image: 'https://source.unsplash.com/200x200/?product,2' },
+    { id: 3, name: 'Product 3', description: 'Description for Product 3', price: 15.99, image: 'https://source.unsplash.com/200x200/?product,3' },
+    { id: 4, name: 'Product 4', description: 'Description for Product 4', price: 35.99, image: 'https://source.unsplash.com/200x200/?product,4' }
+];
+
+// Display Product Listing Page
+function showProductListing() {
+    const productList = document.getElementById('product-list');
+    productList.innerHTML = '';  // Clear existing products
+
+    products.forEach(product => {
+        const productDiv = document.createElement('div');
+        productDiv.className = 'product';
+        productDiv.innerHTML = `
+            <img src="${product.image}" alt="${product.name}">
+            <h2>${product.name}</h2>
+            <p>${product.description}</p>
+            <p><strong>$${product.price}</strong></p>
+            <a href="javascript:void(0)" onclick="showProductDetail(${product.id})">View Details</a>
+            <button onclick="addToCart(${product.id})">Add to Cart</button>
+        `;
+        productList.appendChild(productDiv);
+    });
+}
+
+// Show Product Detail Page
+function showProductDetail(productId) {
+    const product = products.find(p => p.id === productId);
+    const productDetail = document.getElementById('product-detail');
+    productDetail.innerHTML = `
+        <header>
+            <h1>${product.name}</h1>
+        </header>
+        <img src="${product.image}" alt="${product.name}">
+        <h2>${product.name}</h2>
+        <p>${product.description}</p>
+        <p><strong>$${product.price}</strong></p>
+        <button onclick="addToCart(${product.id})">Add to Cart</button>
+        <button onclick="showProductListing()">Back to Product List</button>
+    `;
+    productDetail.style.display = 'block';
+    document.getElementById('product-list').style.display = 'none';
+}
+
+// Add product to cart (store in localStorage)
+function addToCart(productId) {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const product = products.find(p => p.id === productId);
+    cart.push(product);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    alert('Product added to cart!');
+}
+
+// Show Cart Page
+function showCart() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cartItems = document.getElementById('cart-items');
+    cartItems.innerHTML = '';
+    cart.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'cart-item';
+        itemDiv.innerHTML = `
+            <h3>${item.name}</h3>
+            <p>Price: $${item.price}</p>
+            <button onclick="removeFromCart(${item.id})">Remove</button>
+        `;
+        cartItems.appendChild(itemDiv);
+    });
+    document.getElementById('cart-page').style.display = 'block';
+    document.getElementById('product-list').style.display = 'none';
+}
+
+// Remove item from cart
+function removeFromCart(productId) {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    cart = cart.filter(item => item.id !== productId);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    showCart();  // Reload cart items
+}
+
+// Proceed to Checkout Page
+function checkout() {
+    document.getElementById('checkout-page').style.display = 'block';
+    document.getElementById('cart-page').style.display = 'none';
+}
+
+// Place Order and Show Thank You Page
+function placeOrder() {
+    const name = document.getElementById('name').value;
+    const address = document.getElementById('address').value;
+    const payment = document.getElementById('payment').value;
+
+    const order = { name, address, payment, items: JSON.parse(localStorage.getItem('cart')) };
+    console.log('Order placed:', order);
+    localStorage.removeItem('cart');  // Clear the cart
+
+    alert('Order placed successfully!');
+    document.getElementById('thank-you-page').style.display = 'block';
+    document.getElementById('checkout-page').style.display = 'none';
+}
+
+// Initialize
+function init() {
+    showProductListing();  // Show Product Listing Page by default
+}
+
+init();  // Run when the page is loaded
+    </script>
+</body>
+</html>
+

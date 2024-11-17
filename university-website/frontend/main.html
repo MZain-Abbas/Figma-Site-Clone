@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Store</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+        }
+        nav ul li {
+            display: inline;
+            margin: 0 10px;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+        .product-list, .cart-items, .checkout-form, .product-detail {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .product, .cart-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 200px;
+        }
+        .product img, .cart-item img {
+            width: 100%;
+            height: auto;
+        }
+        .checkout-form input, .checkout-form textarea {
+            margin: 10px 0;
+            padding: 8px;
+            width: 100%;
+        }
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        /* Section Styles */
+        .home {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .product-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .product-item {
+            width: 200px;
+            text-align: center;
+        }
+        .product-item img {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<header>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="cart.html">Cart</a></li>
+            <li><a href="admin.html">Admin Panel</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- Home Page -->
+<section class="home">
+    <h1>Welcome to My Online Store</h1>
+    <p>Browse our collection of amazing products.</p>
+    <a href="products.html" class="btn">Shop Now</a>
+</section>
+
+<!-- Product Listing Page (products.html) -->
+<section id="product-list" class="product-list">
+    <!-- Products will be displayed here dynamically -->
+</section>
+
+<!-- Product Detail Page (hidden) -->
+<section id="product-detail" class="product-detail" style="display: none;">
+    <header>
+        <h1>Product Detail</h1>
+    </header>
+    <!-- Product details will be displayed here -->
+</section>
+
+<!-- Cart Page (hidden) -->
+<section id="cart-page" style="display: none;">
+    <header>
+        <h1>Your Cart</h1>
+    </header>
+    <div id="cart-items" class="cart-items">
+        <!-- Cart items will be displayed here dynamically -->
+    </div>
+    <button onclick="checkout()">Proceed to Checkout</button>
+</section>
+
+<!-- Checkout Page (hidden) -->
+<section id="checkout-page" style="display: none;">
+    <header>
+        <h1>Checkout</h1>
+    </header>
+    <div class="checkout-form">
+        <label for="name">Full Name:</label>
+        <input type="text" id="name" placeholder="Enter your name" required>
+
+        <label for="address">Address:</label>
+        <input type="text" id="address" placeholder="Enter your address" required>
+
+        <label for="payment">Payment Method:</label>
+        <input type="text" id="payment" placeholder="Enter payment details" required>
+
+        <button onclick="placeOrder()">Place Order</button>
+    </div>
+</section>
+
+<!-- Thank You Page (hidden) -->
+<section id="thank-you-page" style="display: none;">
+    <header>
+        <h1>Thank You for Your Order!</h1>
+        <p>Your order has been successfully placed. We will notify you when it's shipped.</p>
+    </header>
+</section>
+
+<!-- Admin Panel (admin.html) -->
+<section class="admin-panel" style="display: none;">
+    <h1>Admin Panel</h1>
+    <nav>
+        <ul>
+            <li><a href="manage-products.html">Manage Products</a></li>
+            <li><a href="view-orders.html">View Orders</a></li>
+            <li><a href="view-customers.html">View Customers</a></li>
+        </ul>
+    </nav>
+</section>
+
+<script>
+// Simulating a simple backend response
+const products = [
+    { id: 1, name: 'Product 1', description: 'Description for Product 1', price: 25.99, image: 'https://via.placeholder.com/200' },
+    { id: 2, name: 'Product 2', description: 'Description for Product 2', price: 19.99, image: 'https://via.placeholder.com/200' }
+];
+
+// Display Product Listing Page
+function showProductListing() {
+    const productList = document.getElementById('product-list');
+    productList.innerHTML = '';  // Clear existing products
+
+    products.forEach(product => {
+        const productDiv = document.createElement('div');
+        productDiv.className = 'product';
+        productDiv.innerHTML = `
+            <img src="${product.image}" alt="${product.name}">
+            <h2>${product.name}</h2>
+            <p>${product.description}</p>
+            <p><strong>$${product.price}</strong></p>
+            <a href="javascript:void(0)" onclick="showProductDetail(${product.id})">View Details</a>
+        `;
+        productList.appendChild(productDiv);
+    });
+}
+
+// Show Product Detail Page
+function showProductDetail(productId) {
+    const product = products.find(p => p.id === productId);
+    const productDetail = document.getElementById('product-detail');
+    productDetail.innerHTML = `
+        <header>
+            <h1>${product.name}</h1>
+        </header>
+        <img src="${product.image}" alt="${product.name}">
+        <h2>${product.name}</h2>
+        <p>${product.description}</p>
+        <p><strong>$${product.price}</strong></p>
+        <button onclick="addToCart(${product.id})">Add to Cart</button>
+        <button onclick="showProductListing()">Back to Product List</button>
+    `;
+    productDetail.style.display = 'block';
+    document.getElementById('product-list').style.display = 'none';
+}
+
+// Add product to cart (store in localStorage)
+function addToCart(productId) {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const product = products.find(p => p.id === productId);
+    cart.push(product);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    alert('Product added to cart!');
+}
+
+// Show Cart Page
+function showCart() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cartItems = document.getElementById('cart-items');
+    cartItems.innerHTML = '';
+    cart.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'cart-item';
+        itemDiv.innerHTML = `
+            <h3>${item.name}</h3>
+            <p>Price: $${item.price}</p>
+            <button onclick="removeFromCart(${item.id})">Remove</button>
+        `;
+        cartItems.appendChild(itemDiv);
+    });
+    document.getElementById('cart-page').style.display = 'block';
+    document.getElementById('product-list').style.display = 'none';
+}
+
+// Remove item from cart
+function removeFromCart(productId) {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    cart = cart.filter(item => item.id !== productId);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    showCart();  // Reload cart items
+}
+
+// Proceed to Checkout Page
+function checkout() {
+    document.getElementById('checkout-page').style.display = 'block';
+    document.getElementById('cart-page').style.display = 'none';
+}
+
+// Place Order and Show Thank You Page
+function placeOrder() {
+    const name = document.getElementById('name').value;
+    const address = document.getElementById('address').value;
+    const payment = document.getElementById('payment').value;
+
+    const order = { name, address, payment, items: JSON.parse(localStorage.getItem('cart')) };
+    console.log('Order placed:', order);
+    localStorage.removeItem('cart');  // Clear the cart
+
+    alert('Order placed successfully!');
+    document.getElementById('thank-you-page').style.display = 'block';
+    document.getElementById('checkout-page').style.display = 'none';
+}
+
+// Initialize
+function init() {
+    showProductListing();
+}
+
+init();
+</script>
+</body>
+</html>
